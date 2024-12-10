@@ -14,7 +14,7 @@ let ordersCollection;
 async function connectToDatabase() {
     try {
         await client.connect();
-        const db = client.db("LessonsStore"); // Specify the database name
+        const db = client.db("LessonsStore"); // Database name
         lessonsCollection = db.collection("lessons");
         ordersCollection = db.collection("orders");
         console.log("Connected to MongoDB - LessonsStore");
