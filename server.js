@@ -1,49 +1,35 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const { MongoClient, ObjectId } = require("mongodb");
 
 const app = express();
 app.use(express.json()); // Middleware to parse JSON
 
 // MongoDB Connection
-const dbURI = "mongodb://localhost:27017/LessonsStore"; // Your database name
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("Connected to MongoDB Compass - LessonsStore"))
-    .catch((err) => console.error("MongoDB connection error:", err));
+const uri = "mongodb+srv://Jadf123:jadjad@cluster0.7suzy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Define Lesson Schema
-const lessonSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    price: Number,
-    image: String,
-    availableInventory: Number,
-    location: String,
-});
+let lessonsCollection;
+let ordersCollection;
 
-const Lesson = mongoose.model("Lesson", lessonSchema);
-
-// Define Order Schema
-const orderSchema = new mongoose.Schema({
-    firstName: { type: String, required: true, match: /^[A-Za-z]+$/ }, // Only letters
-    lastName: { type: String, required: true, match: /^[A-Za-z]+$/ }, // Only letters
-    phone: { type: String, required: true, match: /^\d+$/ }, // Ensure phone is numeric
-    address: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zip: { type: String, required: true, match: /^\d+$/ }, // Ensure zip code is numeric
-    gift: { type: Boolean, default: false },
-    method: { type: String, enum: ["Home", "Business"], required: true },
-    lessons: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }], // Referencing lessons
-});
-
-const Order = mongoose.model("Order", orderSchema);
+async function connectToDatabase() {
+    try {
+        await client.connect();
+        const db = client.db("LessonsStore"); // Specify the database name
+        lessonsCollection = db.collection("lessons");
+        ordersCollection = db.collection("orders");
+        console.log("Connected to MongoDB - LessonsStore");
+    } catch (err) {
+        console.error("MongoDB connection error:", err);
+    }
+}
+connectToDatabase();
 
 // API Endpoints
 
 // 1. Get all lessons
 app.get("/api/lessons", async (req, res) => {
     try {
-        const lessons = await Lesson.find();
+        const lessons = await lessonsCollection.find().toArray();
         res.json(lessons);
     } catch (err) {
         res.status(500).json({ error: "Failed to fetch lessons" });
@@ -53,15 +39,20 @@ app.get("/api/lessons", async (req, res) => {
 // 2. Update lesson inventory
 app.put("/api/lessons/:id", async (req, res) => {
     try {
-        const lesson = await Lesson.findByIdAndUpdate(
-            req.params.id,
-            { $inc: { availableInventory: -1 } }, // Decrement inventory
-            { new: true }
+        const lessonId = req.params.id;
+        const updateResult = await lessonsCollection.updateOne(
+            { _id: new ObjectId(lessonId) },
+            { $inc: { availableInventory: -1 } } // Decrement inventory
         );
-        if (!lesson) return res.status(404).json({ error: "Lesson not found" });
-        res.json(lesson);
+
+        if (updateResult.matchedCount === 0) {
+            return res.status(404).json({ error: "Lesson not found" });
+        }
+
+        const updatedLesson = await lessonsCollection.findOne({ _id: new ObjectId(lessonId) });
+        res.json(updatedLesson);
     } catch (err) {
-        res.status(500).json({ error: "Failed to update lesson" });
+        res.status(500).json({ error: "Failed to update lesson", details: err });
     }
 });
 
@@ -84,8 +75,8 @@ app.post("/api/orders", async (req, res) => {
             return res.status(400).json({ error: "Invalid zip code. Only digits are allowed." });
         }
 
-        // Create the order
-        const order = new Order({
+        // Insert the order into the orders collection
+        const order = {
             firstName,
             lastName,
             phone,
@@ -96,17 +87,55 @@ app.post("/api/orders", async (req, res) => {
             gift,
             method,
             lessons,
-        });
+            createdAt: new Date(),
+        };
 
-        await order.save();
-        res.status(201).json({ message: "Order placed successfully", order });
+        const result = await ordersCollection.insertOne(order);
+        res.status(201).json({ message: "Order placed successfully", orderId: result.insertedId });
     } catch (err) {
         res.status(500).json({ error: "Failed to place order", details: err });
     }
 });
 
+// Seed Data (Optional)
+app.post("/api/seed", async (req, res) => {
+    const seedLessons = [
+        {
+            title: "Mathematics for Beginners",
+            description: "An introductory course to fundamental mathematics concepts.",
+            price: 100,
+            image: "images/mathforbeginners.png",
+            availableInventory: 10,
+            location: "Hendon",
+        },
+        {
+            title: "Intermediate Algebra",
+            description: "Master the art of algebra with this intermediate-level course.",
+            price: 120,
+            image: "images/intermediatealgebra.jpeg",
+            availableInventory: 8,
+            location: "Colindale",
+        },
+        {
+            title: "Advanced Calculus",
+            description: "A comprehensive guide to advanced calculus techniques.",
+            price: 150,
+            image: "images/advancedcalculus.jpeg",
+            availableInventory: 5,
+            location: "Brent Cross",
+        },
+    ];
+
+    try {
+        const result = await lessonsCollection.insertMany(seedLessons);
+        res.status(201).json({ message: "Database seeded with lessons", insertedCount: result.insertedCount });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to seed database", details: err });
+    }
+});
+
 // Start the server
-const PORT = 3000;
+const PORT = 4000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

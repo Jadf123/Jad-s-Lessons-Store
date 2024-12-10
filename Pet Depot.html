@@ -28,8 +28,9 @@
                     </figure>
                     <h2 v-text="product.title"></h2>
                     <p v-html="product.description"></p>
-                    <p><strong>Price:</strong> £{{ product.price }}</p>
+                    <p><strong>Price:</strong> AED{{ product.price }}</p>
                     <p><strong>Location:</strong> {{ product.location }}</p>
+                    <p><strong>Stock: </strong> {{ product.availableInventory }}</p>
                     <button v-on:click="addToCart(product)" v-if="product.availableInventory > 0">
                         Add to cart
                     </button>
@@ -47,10 +48,10 @@
                     <h3>Your Cart</h3>
                     <ul>
                         <li v-for="item in cart" :key="item.id" class="cart-item">
-                            {{ item.title }} - £{{ item.price }}
+                            {{ item.title }} - AED{{ item.price }}
                         </li>
                     </ul>
-                    <p><strong>Total:</strong> £{{ totalPrice }}</p>
+                    <p><strong>Total:</strong> AED{{ totalPrice }}</p>
                 </div>
 
                 <!-- User Information Inputs -->
@@ -113,7 +114,7 @@
                 <p><strong>Gift:</strong> {{ order.gift }}</p>
                 <p><strong>Method:</strong> {{ order.method }}</p>
                 <button v-on:click="submitForm" :disabled="!isCheckoutValid">
-                    Place Order
+                    Checkout - Place Order
                 </button>
             </div>
         </main>
