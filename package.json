@@ -1,0 +1,14 @@
+{
+    "name": "random-number-api",
+    "private": true,
+    "scripts": {
+        "start": "node app"
+    },
+    "dependancies": {
+        "express": "^5.0.0"
+    },
+    "dependencies": {
+        "mongodb": "^3.6.3",
+        "mongoose": "^8.8.4"
+    }
+}

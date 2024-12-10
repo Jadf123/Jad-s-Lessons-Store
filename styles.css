@@ -1,0 +1,177 @@
+/* General reset for padding and margin */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Body styling */
+body {
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header styling */
+header {
+    background-color: #007bff;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    margin-right: auto;
+}
+
+header button {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+header button:hover {
+    background-color: #218838;
+}
+
+/* App Container */
+#app {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Computation Area */
+#app p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Main Section - Product Display */
+main {
+    text-align: left;
+}
+
+main figure {
+    margin: 1rem 0;
+    text-align: center;
+}
+
+main figure img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+main h2 {
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+main p {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+}
+
+/* Form styling for Checkout */
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+label {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+/* Order Information Display */
+strong {
+    display: inline-block;
+    width: 150px;
+    font-weight: bold;
+}
+
+/* Place Order Button */
+button[type="button"],
+button[type="submit"] {
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    color: #fff;
+    background-color: #dc3545;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+button[type="button"]:hover,
+button[type="submit"]:hover {
+    background-color: #c82333;
+}
+
+/* Responsive styling */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    #app {
+        padding: 1rem;
+    }
+
+    main h2 {
+        font-size: 1.4rem;
+    }
+
+    strong {
+        width: auto;
+        font-weight: bold;
+    }
+}
